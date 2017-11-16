@@ -7,5 +7,5 @@
 >1. TCP/IP
 >2. [HTTP1.0/1.1/2.0](https://weinh.github.io/knowledge/computer-base/internet-protocol%26specification/http)
 >3. [HTTPS](https://weinh.github.io/knowledge/computer-base/internet-protocol%26specification/https)
->4. OAuth2.0
+>4. [OAuth2.0](https://weinh.github.io/knowledge/computer-base/internet-protocol%26specification/OAuth2.0)
 >5. REST
