@@ -1,3 +1,11 @@
 # 知识点学习
-## 数据结构
-### 树
+## 计算机基础
+* 操作系统
+* 编译原理
+* 计算机网络
+* 互联网协议，规范
+>1. TCP/IP
+>2. HTTP1.0/1.1/2.0
+>3. [HTTPS](https://github.com/weinh/knowledge/computer-base/internet-protocol&specification/http.md)
+>4. OAuth2.0
+>5. REST
