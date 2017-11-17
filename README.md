@@ -9,3 +9,8 @@
 >3. [HTTPS](https://weinh.github.io/knowledge/computer-base/internet-protocol%26specification/https)
 >4. [OAuth2.0](https://weinh.github.io/knowledge/computer-base/internet-protocol%26specification/OAuth2.0)
 >5. REST
+
+## JAVA知识
+* [基础语法](https://weinh.github.io/knowledge/java-knowledge/basic-grammar)
+* 集合框架
+* 高级特性
