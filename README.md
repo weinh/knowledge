@@ -14,3 +14,10 @@
 * [基础语法](https://weinh.github.io/knowledge/java-knowledge/basic-grammar)
 * 集合框架
 * 高级特性
+
+## 分布式系统
+* 消息队列
+>1. [RabbitMQ](./distributed-system/MQ/RabbitMQ)
+* 数据库
+>1. 读写分离
+>2. [分库（myCat）](./distributed-system/DB/depots)
