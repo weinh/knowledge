@@ -17,7 +17,7 @@
 
 ## 分布式系统
 * 消息队列
->1. [RabbitMQ](./distributed-system/MQ/RabbitMQ)
+>1. [RabbitMQ](./distributed-system/MQ/RabbitMQ.md)
 * 数据库
 >1. 读写分离
->2. [分库（myCat）](./distributed-system/DB/depots)
+>2. [分库（myCat）](./distributed-system/DB/depots.md)
