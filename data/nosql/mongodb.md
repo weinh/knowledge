@@ -485,3 +485,28 @@ if (result == null) {
 数据库命令是通过db.runCommand命令下执行的，可以通过db.listCommands命令查看所有的数据库命令
 
 数据库命令其实是在$cmd集合上进行查询，只不过是使用特殊的方式执行命令，而不是查询处理，部分命令（比如shutdown）只能在admin库中执行才有效，如果需要在普通库执行特殊命令，需要使用db.adminCommand的方式执行
+
+## 索引
+* db.`collectionName`.ensureIndex命令创建索引，创建索引比较慢的话，可以通过db.currentOp()查看创建进度
+* db.`collectionName`.find().explain()命令可以查看查询效率
+* 索引的建立使查询变得快速了，可是对于插入，更新，删除都会有性能的影响，所以应该建立有必要是索引，特别是那些常用的查询字段
+* 索引对于排序非常快，不过需要首先使用索引字段排序才有意义
+```js
+db.users.find().sort({
+  "age": 1,
+  "username": 1
+})
+//如果索引是建在username上那么，是没有太大意义的，所以引入了复合索引的概念
+db.users.ensureIndex({
+  "age": 1,
+  "username": 1
+})
+```
+* 使用覆盖索引，一个索引包含用户请求的所有字段，索引包含数组字段，那么永远也无法覆盖查询
+* 隐式索引
+
+### $操作符如何使用索引
+* $where或$exists无法使用索引
+* 如果使用稀疏索引就不能使用$exists
+* $ne可以使用索引，但不有效
+* 
