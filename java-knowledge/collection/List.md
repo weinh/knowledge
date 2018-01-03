@@ -4,7 +4,7 @@
 线程不安全
 ## [LinkedList](list/LinkedList.md)
 线程不安全
-## Vector
+## [Vector](list/Vector.md)
 线程安全
 ## Stack
 线程安全
