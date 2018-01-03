@@ -57,6 +57,10 @@ intern()方法的作用是常量池的扩展，当调用该方法时会检查常
 
 String具有不可变性，当String变量需要经常变换时，会产生很多变量，应考虑StringBuffer或StringBuilder提高效率
 ## StringBuffer & StringBuilder
+集成图谱如下：
+
+![](../resources/image/AbstractStringBuilder.png "AbstractStringBuilder")
+
 他们具有功能的父类AbstractStringBuilder，处理了大部分工作，将字符串附加到char[] value中，从而提高效率
 
 其中StringBuffer是线程安全的，因为他在方法上加了synchronized的修饰

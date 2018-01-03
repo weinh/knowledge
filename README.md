@@ -15,7 +15,7 @@
 * [基础语法](./java-knowledge/basic-grammar.md)
 * 集合框架
 
-1. List
+1. [List](java-knowledge/collection/List.md)
 2. Set
 3. Map
 
