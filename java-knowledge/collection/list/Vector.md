@@ -365,3 +365,165 @@ Vector实现其实和ArrayList差不多，无非只是加了同步关键字`sync
         elementData[index] = obj;
     }
 ```
+### 移除指定位置元素
+没有返回值
+```java
+    /**
+     * Deletes the component at the specified index. Each component in
+     * this vector with an index greater or equal to the specified
+     * {@code index} is shifted downward to have an index one
+     * smaller than the value it had previously. The size of this vector
+     * is decreased by {@code 1}.
+     *
+     * <p>The index must be a value greater than or equal to {@code 0}
+     * and less than the current size of the vector.
+     *
+     * <p>This method is identical in functionality to the {@link #remove(int)}
+     * method (which is part of the {@link List} interface).  Note that the
+     * {@code remove} method returns the old value that was stored at the
+     * specified position.
+     *
+     * @param      index   the index of the object to remove
+     * @throws ArrayIndexOutOfBoundsException if the index is out of range
+     *         ({@code index < 0 || index >= size()})
+     */
+    public synchronized void removeElementAt(int index) {
+        modCount++;
+        if (index >= elementCount) {
+            throw new ArrayIndexOutOfBoundsException(index + " >= " +
+                                                     elementCount);
+        }
+        else if (index < 0) {
+            throw new ArrayIndexOutOfBoundsException(index);
+        }
+        int j = elementCount - index - 1;
+        if (j > 0) {
+            System.arraycopy(elementData, index + 1, elementData, index, j);
+        }
+        elementCount--;
+        elementData[elementCount] = null; /* to let gc do its work */
+    }
+```
+### 将元素插入到指定位置
+```java
+    /**
+     * Inserts the specified object as a component in this vector at the
+     * specified {@code index}. Each component in this vector with
+     * an index greater or equal to the specified {@code index} is
+     * shifted upward to have an index one greater than the value it had
+     * previously.
+     *
+     * <p>The index must be a value greater than or equal to {@code 0}
+     * and less than or equal to the current size of the vector. (If the
+     * index is equal to the current size of the vector, the new element
+     * is appended to the Vector.)
+     *
+     * <p>This method is identical in functionality to the
+     * {@link #add(int, Object) add(int, E)}
+     * method (which is part of the {@link List} interface).  Note that the
+     * {@code add} method reverses the order of the parameters, to more closely
+     * match array usage.
+     *
+     * @param      obj     the component to insert
+     * @param      index   where to insert the new component
+     * @throws ArrayIndexOutOfBoundsException if the index is out of range
+     *         ({@code index < 0 || index > size()})
+     */
+    public synchronized void insertElementAt(E obj, int index) {
+        modCount++;
+        if (index > elementCount) {
+            throw new ArrayIndexOutOfBoundsException(index
+                                                     + " > " + elementCount);
+        }
+        ensureCapacityHelper(elementCount + 1);
+        System.arraycopy(elementData, index, elementData, index + 1, elementCount - index);
+        elementData[index] = obj;
+        elementCount++;
+    }
+```
+### 增加元素到末尾
+```java
+    /**
+     * Adds the specified component to the end of this vector,
+     * increasing its size by one. The capacity of this vector is
+     * increased if its size becomes greater than its capacity.
+     *
+     * <p>This method is identical in functionality to the
+     * {@link #add(Object) add(E)}
+     * method (which is part of the {@link List} interface).
+     *
+     * @param   obj   the component to be added
+     */
+    public synchronized void addElement(E obj) {
+        modCount++;
+        ensureCapacityHelper(elementCount + 1);
+        elementData[elementCount++] = obj;
+    }
+```
+### 删除指定元素
+```java
+    /**
+     * Removes the first (lowest-indexed) occurrence of the argument
+     * from this vector. If the object is found in this vector, each
+     * component in the vector with an index greater or equal to the
+     * object's index is shifted downward to have an index one smaller
+     * than the value it had previously.
+     *
+     * <p>This method is identical in functionality to the
+     * {@link #remove(Object)} method (which is part of the
+     * {@link List} interface).
+     *
+     * @param   obj   the component to be removed
+     * @return  {@code true} if the argument was a component of this
+     *          vector; {@code false} otherwise.
+     */
+    public synchronized boolean removeElement(Object obj) {
+        modCount++;
+        int i = indexOf(obj);
+        if (i >= 0) {
+            removeElementAt(i);
+            return true;
+        }
+        return false;
+    }
+```
+### 删除所有元素
+```java
+    /**
+     * Removes all components from this vector and sets its size to zero.
+     *
+     * <p>This method is identical in functionality to the {@link #clear}
+     * method (which is part of the {@link List} interface).
+     */
+    public synchronized void removeAllElements() {
+        modCount++;
+        // Let gc do its work
+        for (int i = 0; i < elementCount; i++)
+            elementData[i] = null;
+
+        elementCount = 0;
+    }
+```
+### 包含集合
+检查入参是否为子集
+```java
+    /**
+     * Returns true if this Vector contains all of the elements in the
+     * specified Collection.
+     *
+     * @param   c a collection whose elements will be tested for containment
+     *          in this Vector
+     * @return true if this Vector contains all of the elements in the
+     *         specified collection
+     * @throws NullPointerException if the specified collection is null
+     */
+    public synchronized boolean containsAll(Collection<?> c) {
+        return super.containsAll(c);
+    }
+```
+## 总结
+其余的大部分操作都和ArrayList类似，只是具备了同步关键字
+
+Vector中很多关于Element的操作很多功能都是类似的，只不过返回值略有差异
+
+另外Vector对于扩容的算法有点不一样，而不是单纯的两倍，而是先看增加容量
