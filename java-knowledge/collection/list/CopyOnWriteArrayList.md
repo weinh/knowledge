@@ -926,3 +926,7 @@ clone()和readObject(java.io.ObjectInputStream s)会用到
 程序不会出现`ConcurrentModificationException`异常，可在循环的过程中调用remove等方法，这点和ArrayList存在区别
 
 COW一般用于读多写少的场景中
+
+COW存在两个问题
+* 变更的时候将有两份数据存在内存中，旧的要等GC回收
+* 数据一致性问题，如果你希望写入的数据需要立马读取出来那么不要使用它，它只能保证最终一致性
