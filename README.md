@@ -16,8 +16,8 @@
 * 集合框架
 
 1. [List](java-knowledge/collection/List.md)
-2. Set
-3. Map
+3. [Map](java-knowledge/collection/Map.md)
+4. [Set](java-knowledge/collection/Set.md)
 
 * 高级特性
 
