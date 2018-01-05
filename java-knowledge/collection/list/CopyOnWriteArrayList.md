@@ -18,7 +18,7 @@ CopyOnWriteArrayList其实是ArrayList的变体，线程安全的
     /** The array, accessed only via getArray/setArray. */
     private transient volatile Object[] array;
 ```
-还有两个属性，和反序列化，锁相关，不知道怎么解释，回过头再看
+还有两个属性，和反序列化，锁相关
 ```java
     private static final sun.misc.Unsafe UNSAFE;
     private static final long lockOffset;
@@ -801,6 +801,8 @@ CopyOnWriteArrayList其实是ArrayList的变体，线程安全的
 ```
 ### 迭代器
 迭代器不支持remove()，set(E e)，add(E e)等方法
+
+这个迭代器COWIterator，创建的时候将数组创建一个快照，然后进行相应操作
 ```java
     /**
      * Returns an iterator over the elements in this list in proper sequence.
@@ -866,3 +868,65 @@ CopyOnWriteArrayList其实是ArrayList的变体，线程安全的
             (getArray(), Spliterator.IMMUTABLE | Spliterator.ORDERED);
     }
 ```
+### 截取一定范围的集合
+```java
+    /**
+     * Returns a view of the portion of this list between
+     * {@code fromIndex}, inclusive, and {@code toIndex}, exclusive.
+     * The returned list is backed by this list, so changes in the
+     * returned list are reflected in this list.
+     *
+     * <p>The semantics of the list returned by this method become
+     * undefined if the backing list (i.e., this list) is modified in
+     * any way other than via the returned list.
+     *
+     * @param fromIndex low endpoint (inclusive) of the subList
+     * @param toIndex high endpoint (exclusive) of the subList
+     * @return a view of the specified range within this list
+     * @throws IndexOutOfBoundsException {@inheritDoc}
+     */
+    public List<E> subList(int fromIndex, int toIndex) {
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            Object[] elements = getArray();
+            int len = elements.length;
+            if (fromIndex < 0 || toIndex > len || fromIndex > toIndex)
+                throw new IndexOutOfBoundsException();
+            return new COWSubList<E>(this, fromIndex, toIndex);
+        } finally {
+            lock.unlock();
+        }
+    }
+```
+### 重新设置锁
+因为lock不可被序列化，反序列化的时候需要重设lock，所以有了这两个属性，可以通过一些JVM底层的操作实现这个动作
+
+clone()和readObject(java.io.ObjectInputStream s)会用到
+```java
+    private void resetLock() {
+        UNSAFE.putObjectVolatile(this, lockOffset, new ReentrantLock());
+    }
+    static {
+        try {
+            UNSAFE = sun.misc.Unsafe.getUnsafe();
+            Class<?> k = CopyOnWriteArrayList.class;
+            lockOffset = UNSAFE.objectFieldOffset
+                (k.getDeclaredField("lock"));
+        } catch (Exception e) {
+            throw new Error(e);
+        }
+    }
+```
+## 总结
+实现中大量使用了`Arrays.copyOf`方法进行拷贝新数组，然后修改，替换原数组，没有了扩容办法，需要几个申请几个
+
+对数据存在变更的方法通过`ReentrantLock`进行加锁操作，保证线程安全
+
+程序不会出现`ConcurrentModificationException`异常，可在循环的过程中调用remove等方法，这点和ArrayList存在区别
+
+COW一般用于读多写少的场景中
+
+COW存在两个问题
+* 变更的时候将有两份数据存在内存中，旧的要等GC回收
+* 数据一致性问题，如果你希望写入的数据需要立马读取出来那么不要使用它，它只能保证最终一致性
