@@ -41,16 +41,14 @@ ConcurrentHashMap是线程安全的，在并发包里面，JDK1.5才支持
      */
     static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 ```
-默认并发级别
+默认并发级别和装载因子
+这两个属性1.8JDK已经不使用，留着只是为了版本兼容
 ```java
     /**
      * The default concurrency level for this table. Unused but
      * defined for compatibility with previous versions of this class.
      */
     private static final int DEFAULT_CONCURRENCY_LEVEL = 16;
-```
-装载因子
-```java
     /**
      * The load factor for this table. Overrides of this value in
      * constructors affect only the initial table capacity.  The
@@ -81,7 +79,7 @@ ConcurrentHashMap是线程安全的，在并发包里面，JDK1.5才支持
      */
     static final int UNTREEIFY_THRESHOLD = 6;
 ```
-哈希表的最小树形化容量
+链表转换为红黑树的另一个条件，数组的最小长度
 ```java
     /**
      * The smallest table capacity for which bins may be treeified.
@@ -91,7 +89,7 @@ ConcurrentHashMap是线程安全的，在并发包里面，JDK1.5才支持
      */
     static final int MIN_TREEIFY_CAPACITY = 64;
 ```
-最小转移步长
+扩容操作中，转换步骤多线程执行，一个线程执行的任务量，一个任务量16个hash桶，便是这个16
 ```java
     /**
      * Minimum number of rebinnings per transfer step. Ranges are
@@ -102,7 +100,7 @@ ConcurrentHashMap是线程安全的，在并发包里面，JDK1.5才支持
      */
     private static final int MIN_TRANSFER_STRIDE = 16;
 ```
-重置生成撮的位数
+扩容生成戳的位数
 ```java
     /**
      * The number of bits used for generation stamp in sizeCtl.
@@ -124,6 +122,16 @@ ConcurrentHashMap是线程安全的，在并发包里面，JDK1.5才支持
      * The bit shift for recording size stamp in sizeCtl.
      */
     private static final int RESIZE_STAMP_SHIFT = 32 - RESIZE_STAMP_BITS;
+```
+几个特殊的hash值
+```java
+    /*
+     * Encodings for Node hash fields. See above for explanation.
+     */
+    static final int MOVED     = -1; // hash for forwarding nodes 临时节点，不存储任何值，读操作碰到临时节点会通过新table获取，写操作碰到临时节点，会帮助扩容
+    static final int TREEBIN   = -2; // hash for roots of trees 红黑树节点
+    static final int RESERVED  = -3; // hash for transient reservations 保留节点，不存储任何值
+    static final int HASH_BITS = 0x7fffffff; // usable bits of normal node hash 负数转正数，用于进行与运算
 ```
 CPU数量
 ```java
@@ -1203,6 +1211,7 @@ clear操作后可能出现负数，不过不影响使用
                     if (tabAt(tab, i) == f) {
                         if (fh >= 0) {
                             binCount = 1;
+                            // 链表长度
                             for (Node<K,V> e = f;; ++binCount) {
                                 K ek;
                                 if (e.hash == hash &&
@@ -1222,6 +1231,7 @@ clear操作后可能出现负数，不过不影响使用
                             }
                         }
                         else if (f instanceof TreeBin) {
+                            // 红黑树
                             Node<K,V> p;
                             binCount = 2;
                             if ((p = ((TreeBin<K,V>)f).putTreeVal(hash, key,
@@ -1235,6 +1245,7 @@ clear操作后可能出现负数，不过不影响使用
                 }
                 if (binCount != 0) {
                     if (binCount >= TREEIFY_THRESHOLD)
+                    // 链表->红黑树转换
                         treeifyBin(tab, i);
                     if (oldVal != null)
                         return oldVal;
