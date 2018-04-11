@@ -21,6 +21,11 @@
 
 * 高级特性
 
+## Java虚拟机
+* [内存模型](jvm/memory-model.md)
+* [类的加载机制](jvm/class-load.md)
+* [类加载器](jvm/loader-class.md)
+
 ## 数据
 * NoSql
 
