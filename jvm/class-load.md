@@ -1,5 +1,6 @@
 # 类的加载机制
 ![](../resources/image/class-load.jpg "类的加载机制")
+
 一个Java类从.java文件编译成.class，然后被JVM使用，主要分为以下几个过程：加载、连接、初始化
 
 ## 加载
