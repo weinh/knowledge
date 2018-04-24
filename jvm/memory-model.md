@@ -33,8 +33,65 @@
 ## 方法区
     以上三个都是线程独立的，该区域属于线程共享，用于存储：类信息，常量，静态常量，即是编译器编译后的代码等数据
     一般称为非堆（Non-Heap）目的就是和Java堆区分开来，从GC的角度也称为永久代（其实并不是不能被回收只是回收的条件比较苛刻）
-    PS：JDK1.8已经没有这个区域了
     该区域也会出现OOM PermGen space，比如启动一个tomcat将-XX:MaxPermSize=1M
+JDK8将永久代移除了，将元数据存放到和堆独立的一个叫元空间的本地内存中，将字符串常量移到堆中
+
+![](../resources/image/jdk8-memory-model.png "JDK8内存模型")
+
+![](../resources/image/jdk8-memory-model-gc.jpg "JDK8内存模型")
+
+这么操作的原因是早期版本不好设置永久代大小，如果设置的太小容易报OOM PermGen space
+
+元空间是JVM规范中方法区的一种实现，本地内存不在虚拟机中
+
+下面通过几个例子验证下
+```java
+public class JDK8OOM {
+
+    static String base = "string";
+
+    public static void main(String[] args) {
+//        stringConstantInHeap();
+        metaSpaceOOM();
+    }
+
+    /**
+     * 字符串常量分配在堆上，设置堆大小为10M：-Xmx10m
+     */
+    private static void stringConstantInHeap() {
+        List<String> list = new ArrayList<String>();
+        for (int i = 0; i < Integer.MAX_VALUE; i++) {
+            String str = base + base;
+            base = str;
+            list.add(str.intern());
+        }
+    }
+
+    /**
+     * 类加载元数据信息保存到元空间（本地内存），设置元空间大小8M：-XX:MaxMetaspaceSize=8m
+     */
+    private static void metaSpaceOOM() {
+        try {
+            //获取有关类型加载的JMX接口
+            ClassLoadingMXBean loadingBean = ManagementFactory.getClassLoadingMXBean();
+            //用于缓存类加载器
+            List<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
+            while (true) {
+                //加载类型并缓存类加载器实例
+                ClassLoader classLoader = new LoaderClass.MyClassLoader();
+                classLoaders.add(classLoader);
+                classLoader.loadClass("jvm.LoaderClass");
+                //显示数量信息（共加载过的类型数目，当前还有效的类型数目，已经被卸载的类型数目）
+                System.out.println("total: " + loadingBean.getTotalLoadedClassCount());
+                System.out.println("active: " + loadingBean.getLoadedClassCount());
+                System.out.println("unloaded: " + loadingBean.getUnloadedClassCount());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
 ## 堆
     该区域也是线程共享的，Java堆JVM内存最大的一块，主要存储一些对象实例，还有数组
     不过随着JIT编译器的成熟，所有对象分配在堆上已经不是"绝对"的事了
@@ -50,7 +107,7 @@
      * @param count 几兆
      * @return
      */
-    private static Byte[] dumpOOM(int count) {
+    private static Byte[] heapOOM(int count) {
         Byte b[] = new Byte[size * count];
         return b;
     }
