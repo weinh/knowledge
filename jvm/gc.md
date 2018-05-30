@@ -65,4 +65,61 @@ Heap
 当对象没有覆盖finalize()方法或finalize()方法已经被虚拟机调用过，虚拟机将这两种情况视为没有必要执行
 
 当第一次被标记后，有机会通过执行finalize()方法`拯救`自己，看下示例代码说明下
+```java
+public class FinalizeGC {
+    private static FinalizeGC SAVA_HOOK = null;
 
+    public void isAlive() {
+        System.out.println("我还活着！");
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        System.out.println("finalize方法执行，逃过一劫");
+        FinalizeGC.SAVA_HOOK = this;
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        SAVA_HOOK = new FinalizeGC();
+
+        SAVA_HOOK = null;
+        System.gc();
+        Thread.sleep(500);
+        if (SAVA_HOOK != null) {
+            SAVA_HOOK.isAlive();
+        } else {
+            System.out.println("终于死了！");
+        }
+
+        SAVA_HOOK = null;
+        System.gc();
+        Thread.sleep(500);
+        if (SAVA_HOOK != null) {
+            SAVA_HOOK.isAlive();
+        } else {
+            System.out.println("终于死了！");
+        }
+    }
+}
+```
+执行结果
+```
+finalize方法执行，逃过一劫
+我还活着！
+终于死了！
+```
+从执行结果来看，finalize()方法只会被执行一次，第一次执行后该对象可以从回收的边缘拉回来，可是没办法逃出毁灭的命运
+
+finalize()方法不建议大家使用，运行代价高，不确定性大，finalize()能做的工作使用try-finally或者其他方式都可以做得更好，更及时
+### 回收方法区
+Java虚拟机规范中说过可以不要求虚拟机在方法区实现垃圾收集，而且在方法区中进行垃圾手机的性价比一般比较低
+
+永久代的垃圾收集主要回收两部分内容：废气常量和无用的类，回收废弃常量和回收Java堆中的对象非常类似
+
+不过要判断一个类是否是无用的类条件比较苛刻
+* 该类所有的实例都已经被回收，也就是Java堆中不存在该类的任何实例
+* 加载该类的ClassLoader已经被回收
+* 该类对应的java.lang.Class对象没有在任何地方被引用，无法在任何地方通过反射访问该类的方法
+
+满足以上三个条件，只是说"可以"被回收而不是必然会回收，是否回收HotSpot虚拟机提供了一些参数进行控制：`-Xnoclassgc`，也可以通过一些参数查看类加载卸载信息
