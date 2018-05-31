@@ -27,6 +27,7 @@
 * [类加载器](jvm/loader-class.md)
 * [垃圾回收GC](jvm/gc.md)
 * [垃圾收集算法](jvm/gc-algorithm.md)
+* [垃圾收集器](jvm/gc-collector.md)
 
 ## 数据
 * NoSql
