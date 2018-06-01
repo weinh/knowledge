@@ -16,10 +16,12 @@
 * 集合框架
 
 1. [List](java-knowledge/collection/List.md)
-3. [Map](java-knowledge/collection/Map.md)
-4. [Set](java-knowledge/collection/Set.md)
+2. [Map](java-knowledge/collection/Map.md)
+3. [Set](java-knowledge/collection/Set.md)
 
 * 高级特性
+
+1. [泛型](java-knowledge/advanced/genericity.md)
 
 ## Java虚拟机
 * [内存模型](jvm/memory-model.md)
