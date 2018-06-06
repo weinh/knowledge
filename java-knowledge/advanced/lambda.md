@@ -146,11 +146,6 @@ public static CallSite metafactory(MethodHandles.Lookup caller,
 ```
 验证是否真的生成了内部类，可以加`-Djdk.internal.lambda.dumpProxyClasses`参数查看生成的内容
 
-这里提一点，不知道为什么使用IDE执行命令那个文件硬是没出来，所以通过命令行执行了
-```
-java -Djdk.internal.lambda.dumpProxyClasses java_knowledge.advanced.TestFunction
-test
-```
 得到文件TestFunction$$Lambda$1.class，反编译看下内容
 ```
 javap.exe -c TestFunction$$Lambda$1.class
