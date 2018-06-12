@@ -196,7 +196,7 @@ stopping nodemanager
 ```
 文中提到的启动停止脚本太过复杂，其中hadoop目录下有sbin目录有很多可用脚本，不过那些脚本需要免密登陆使用起来才更顺畅，配置免密
 ```shell
-# 切换到hadoop用户，生产密钥
+# 切换到hadoop用户，生成密钥
 [root@iZbp1amsik1dd70x6y5q62Z ~]# su hadoop
 [hadoop@iZbp1amsik1dd70x6y5q62Z root]$ cd ~
 [hadoop@iZbp1amsik1dd70x6y5q62Z ~]$ ssh-keygen -t rsa
