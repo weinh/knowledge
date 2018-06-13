@@ -52,6 +52,7 @@ for (String string : strings) {
 
 ### 用户操作如何记录
 这里使用了`操作`一词，指的是中间操作，很多Stream操作会需要一个回调函数（lambda表达式），因此一个完整的操作时<数据来源，操作，回调函数>构成的三元组，Stream中使用stage的概念描述一个完整的操作，并用某种实例化后的PipelineHelper来代表stage，将具有先后顺序的各个stage连到一起，就构成了整个流水线，看下Stream的类图
+
 ![Stream](../../resources/image/Stream.png "Stream")
 
 图中Head表示第一个stage，比如调用Stream.of(strings)方法产生的stage，很显然这个stage里不包含任何操作，StatelessOp表示无状态stage，StatefulOp表示有状态stage
@@ -92,6 +93,7 @@ AbstractPipeline(AbstractPipeline<?, E_IN, ?> previousStage, int opFlags) {
 跟随着stream方法调用，不断产生新的Stream，这些Stream对象以双向链表的形式组织在一起，构成整一个流水线，由于每个stage都记录了前一个stage和本次的操作以及回调函数，依靠这种构成就能建立起对数据源的所有操作，这就是Stream记录操作的方式
 ### 操作如何叠加
 以上只是解决了操作记录的问题，想让流水线起到应有的作用我们需要某种协议来协调相邻stage之间的调用关系，这种协议有Sink接口完成
+
 ![Sink](../../resources/image/Sink.png "Sink")
 
 方法名|作用
