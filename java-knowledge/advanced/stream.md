@@ -252,14 +252,14 @@ final <P_IN> void copyInto(Sink<P_IN> wrappedSink, Spliterator<P_IN> spliterator
 最后一个问题是流水线上所有操作都执行后，用户所需要的结果（如果有）在哪里？
 
 首先要说明的是并不是所有的结束操作都需要返回结果，有些操作只是为了使用其副作用，比如使用Stream.forEach()方法将结果打印出来就是常见的使用副作用的场景（事实上，除了打印之外其他场景都应避免使用副作用）
-> 副作用不应该被滥用，也许你会觉得在Stream.forEach()里进行元素手机是不错的选择，就想下面代码那样，但遗憾的是这样使用的正确性和效率都无法保证，因为Stream可能并行执行，大多数使用副作用的地方都可以使用归约操作更安全和有效的完成
+> 副作用不应该被滥用，也许你会觉得在Stream.forEach()里进行元素收集是不错的选择，就想下面代码那样，但遗憾的是这样使用的正确性和效率都无法保证，因为Stream可能并行执行，大多数使用副作用的地方都可以使用归约操作更安全和有效的完成
 ```java
 // 错误的收集方式
 ArrayList<String> s1 = new ArrayList<>();
-Arrays.stream(strings).filter(s -> s.startsWith("a"))
+Arrays.stream(strings).filter(s -> s.startsWith("a")).parallel()
         .forEach(s1::add);
 // 正确的收集方式
-List<String> s2 = Arrays.stream(strings).filter(s -> s.startsWith("a"))
+List<String> s2 = Arrays.stream(strings).filter(s -> s.startsWith("a")).parallel()
         .collect(Collectors.toList());
 ```
 回到流水线执行结果的问题上来，返回的结果存在哪里呢，这要根据情况讨论：

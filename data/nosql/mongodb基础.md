@@ -1,13 +1,19 @@
 # mongodb
 ## 安装
-下载软件包
-```
+下载软件包，解压，配置环境变量
+```shell
 [root@localhost opt]# wget https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-3.6.0-rc7.tgz
 [root@localhost opt]# tar -vxzf mongodb-linux-x86_64-3.6.0-rc7.tgz
 ```
-设置环境变量
+安装部署之前简单说下mongodb的安全机制，默认mongodb是没有密码的，所以我们需要主动添加用户并设置密码，mongodb有两个特殊的数据库`admin`和`local`这下面的用户可以访问所有数据库，相当于超级管理员
 
-创建数据，日志存放目录，为了方便将参数定义到配置文件中如下
+那么我们先部署一个无密码的mongodb，创建超级管理员后再开启密码验证，手动创建下用于存储mongodb日志或mongodb数据的目录（mongodb不会自动创建），创建配置文件mongodb.conf（不开启验证）
+```shell
+[root@localhost opt]# mkdir -p  /opt/mongodb/db/logs
+[root@localhost opt]# mkdir -p  /opt/mongodb/db/data
+[root@localhost db]# vim mongodb.conf
+```
+配置文件内容如下
 ```yaml
 systemLog:
    path: /opt/mongodb/db/logs/mongod.log
@@ -20,22 +26,19 @@ net:
    bindIpAll: true
 processManagement:
    fork: true
-security:
-   authorization: enabled
+#先关闭验证
+#security:
+#   authorization: enabled
 ```
 然后启动
 ```shell
 [root@localhost data]# mongod -f mongodb.conf
 ```
-日志显示启动成功
-
 客户端链接，默认本机IP，27017端口
 ```shell
 [root@localhost log]# mongo
 ```
-为了安全需要设置密码，mongodb有两个特殊的数据库`admin`，`local`这下面的用户可以访问所有数据库，相当于超级管理员
-
-开启权限校验前需要建立一个管理员用户，如下
+建立一个管理员用户，如下
 ```shell
 > use admin
 switched to db admin

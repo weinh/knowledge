@@ -24,7 +24,7 @@
 ```java
 String ok="ok";
 String ok1=new String("ok");
-System.out.println(ok==ok1);//fasle
+System.out.println(ok==ok1);//false
 
 String ok="apple1";
 String ok1="apple"+1;
