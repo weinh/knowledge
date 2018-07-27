@@ -501,7 +501,23 @@ public class JstackOut {
 2. `wait()，join()`：WAITING (on object monitor)
 3. `wait(long timeout)，join(long millis)`：TIMED_WAITING (on object monitor)
 
-## 总结
-其中如果是线程池创建的线程处于`WAITING (parking)`状态很正常可能只是再等待任务执行而已
+一张图认识下Java监视锁
 
-如果出现大批量的`waiting for monitor entry`状态需要重点观察下，走查下代码
+![Java监视锁](../../resources/image/ThreadMonitor.jpg "Java监视锁")
+
+监视锁只能属于一个活动线程，等待线程分别再两个区中`Entry Set`和`Wait Set`
+
+1. runnable
+> 活动线程，运行中
+2. waiting for monitor entry
+> 通过synchronized关键字进入了监视器的临界区，并处于"Entry Set"队列，等待monitor
+> 
+> 该状态很多的情况下需要重点观察，说明很多线程在等待锁，重点看谁持有了锁为什么迟迟不释放
+3. in Object.wait()
+> 线程执行了wait方法之后，释放了monitor，进入到"Wait Set"队列
+4. waiting on condition
+> java.lang.Thread.State: TIMED_WAITING (sleeping)：调用了sleep()方法
+> 
+> WAITING (parking)：获取了锁(lock)，进入了临界区，但是在等待某种条件，如果是线程池线程很可能只是在等待任务执行而已
+> 
+> 如果该状态也大量出现，需要重点观察IO，不管是网络IO还是本地IO
