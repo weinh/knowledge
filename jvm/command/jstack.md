@@ -446,6 +446,7 @@ public class JstackOut {
         Thread.currentThread().join(10 * 1000);
         Thread.currentThread().join();
     }
+}
 ```
 这个例子的输出有种表现前10秒
 ```
