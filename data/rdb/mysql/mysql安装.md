@@ -2,7 +2,7 @@
 ## 前期准备
 下载解压安装包
 ```shell
-[root@localhost opt]# wget wget https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-5.7.23-1.el7.x86_64.rpm-bundle.tar
+[root@localhost opt]# wget https://dev.mysql.com/get/Downloads/MySQL-5.7/mysql-5.7.27-1.el7.x86_64.rpm-bundle.tar
 [root@localhost opt]# tar -xvf mysql-5.7.23-1.el7.x86_64.rpm-bundle.tar
 ```
 ## 安装
@@ -17,6 +17,7 @@
 本次安装过程中出现一些错误，包冲突的问题，需要先移除包再安装，移除包方法
 ```shell
 [root@localhost opt]# yum remove mariadb-libs
+[root@localhost opt]# yum install libaio
 ```
 ## 启动配置
 启动服务
