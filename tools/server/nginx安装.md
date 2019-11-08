@@ -21,3 +21,16 @@
 ```shell
 [root@localhost sbin]# ./nginx
 ```
+## 非root用户下安装
+安装依赖，指定安装目录（其他目录没有权限）
+```shell
+[hsyq@jiaotou-40 pcre-8.40]$ ./configure --prefix=/home/hsyq/middleware/pcre-8.40
+[hsyq@jiaotou-40 pcre-8.40]$ make && make install
+[hsyq@jiaotou-40 zlib-1.2.11]$ ./configure --prefix=/home/hsyq/middleware/zlib-1.2.11
+[hsyq@jiaotou-40 zlib-1.2.11]$ make && make install
+```
+安装nginx，指定安装目录，指定依赖模块源码目录
+```shell
+[hsyq@jiaotou-40 nginx-1.16.0]$ ./configure --prefix=/home/hsyq/middleware/nginx-1.16.0 --with-pcre=/home/hsyq/soft/pcre-8.40 --with-zlib=/home/hsyq/soft/zlib-1.2.11
+[hsyq@jiaotou-40 nginx-1.16.0]$ make && make install
+```
