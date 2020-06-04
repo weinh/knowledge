@@ -12,6 +12,7 @@
 提示报错，安装依赖包
 ```shell
 [root@localhost nginx-1.14.0]# yum install pcre pcre-devel
+[root@localhost nginx-1.14.0]# yum install openssl-devel
 [root@localhost nginx-1.14.0]# yum install zlib zlib-devel
 ```
 ```shell
@@ -31,6 +32,6 @@
 ```
 安装nginx，指定安装目录，指定依赖模块源码目录
 ```shell
-[hsyq@jiaotou-40 nginx-1.16.0]$ ./configure --prefix=/home/hsyq/middleware/nginx-1.16.0 --with-pcre=/home/hsyq/soft/pcre-8.40 --with-zlib=/home/hsyq/soft/zlib-1.2.11
+[hsyq@jiaotou-40 nginx-1.16.0]$ ./configure --with-http_stub_status_module --with-http_ssl_module --prefix=/home/hsyq/middleware/nginx-1.16.0 --with-pcre=/home/hsyq/soft/pcre-8.40 --with-zlib=/home/hsyq/soft/zlib-1.2.11
 [hsyq@jiaotou-40 nginx-1.16.0]$ make && make install
 ```
